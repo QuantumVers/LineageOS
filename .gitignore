@@ -1,0 +1,10 @@
+# Real family research must never be added to this public repository.
+*Private*.html
+*private*.json
+Goldman_Family_*
+private-data.json
+*.ged
+*.gedcom
+*backup*.json
+node_modules/
+test-results/
