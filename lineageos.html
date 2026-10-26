@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LineageOS — Every Human. One Family Tree.</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--gold:#C9A84C;--gold-light:#E8D5A0;--gold-dark:#A08030;--bg:#000;--bg-card:rgba(255,255,255,0.03);--bg-card-hover:rgba(255,255,255,0.06);--border:rgba(255,255,255,0.08);--border-gold:rgba(201,168,76,0.3);--text:#fff;--text-dim:rgba(255,255,255,0.5);--text-mid:rgba(255,255,255,0.7);--radius:12px;--radius-lg:20px;--transition:0.3s cubic-bezier(0.4,0,0.2,1)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:var(--gold);color:#000}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.25)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:var(--transition)}
+nav.scrolled{background:rgba(0,0,0,0.95)}
+.nav-logo{font-weight:800;font-size:18px;letter-spacing:-0.5px;display:flex;align-items:center;gap:8px}
+.nav-logo .logo-icon{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#000}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{color:var(--text-dim);text-decoration:none;font-size:13px;font-weight:500;transition:var(--transition);position:relative}
+.nav-links a:hover,.nav-links a.active{color:var(--text)}
+.nav-links a.active::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1.5px;background:var(--gold);border-radius:1px}
+
+#hero{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden}
+#hero-canvas{position:absolute;inset:0;z-index:0}
+.hero-content{position:relative;z-index:1;text-align:center;max-width:800px;padding:0 20px}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:100px;background:rgba(201,168,76,0.1);border:1px solid var(--border-gold);font-size:12px;font-weight:500;color:var(--gold);margin-bottom:32px;letter-spacing:0.5px}
+.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+h1.hero-title{font-size:clamp(40px,7vw,80px);font-weight:800;letter-spacing:-2px;line-height:1.05;margin-bottom:20px;background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,0.7) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{font-size:clamp(16px,2vw,20px);color:var(--text-dim);font-weight:300;max-width:540px;margin:0 auto 40px;line-height:1.5}
+.hero-buttons{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{padding:12px 28px;border-radius:100px;font-size:14px;font-weight:600;cursor:pointer;transition:var(--transition);border:none;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:var(--gold);color:#000}
+.btn-primary:hover{background:var(--gold-light);transform:translateY(-1px);box-shadow:0 8px 30px rgba(201,168,76,0.3)}
+.btn-secondary{background:rgba(255,255,255,0.08);color:#fff;border:1px solid var(--border)}
+.btn-secondary:hover{background:rgba(255,255,255,0.12);transform:translateY(-1px)}
+
+.stats-bar{position:relative;z-index:1;display:flex;gap:40px;justify-content:center;margin-top:60px;flex-wrap:wrap;padding:0 20px}
+.stat{text-align:center}
+.stat-number{font-size:24px;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums}
+.stat-label{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+
+section{min-height:100vh;padding:100px 40px;position:relative}
+.section-header{text-align:center;max-width:600px;margin:0 auto 60px}
+.section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--gold);margin-bottom:12px}
+.section-title{font-size:clamp(28px,4vw,44px);font-weight:700;letter-spacing:-1px;margin-bottom:16px}
+.section-desc{color:var(--text-dim);font-size:15px;line-height:1.7}
+
+#explorer{background:linear-gradient(180deg,#000 0%,#050505 100%)}
+.explorer-container{max-width:1200px;margin:0 auto}
+.search-box{max-width:500px;margin:0 auto 40px;position:relative}
+.search-box input{width:100%;padding:14px 20px 14px 44px;border-radius:100px;border:1px solid var(--border);background:var(--bg-card);color:#fff;font-size:15px;font-family:inherit;outline:none;transition:var(--transition)}
+.search-box input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,0.1)}
+.search-box input::placeholder{color:var(--text-dim)}
+.search-box .search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:16px}
+.search-results{position:absolute;top:100%;left:0;right:0;background:rgba(20,20,20,0.98);border:1px solid var(--border);border-radius:var(--radius);margin-top:8px;max-height:300px;overflow-y:auto;display:none;z-index:10;backdrop-filter:blur(20px)}
+.search-results.show{display:block}
+.search-result-item{padding:12px 20px;cursor:pointer;transition:var(--transition);display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+.search-result-item:last-child{border-bottom:none}
+.search-result-item:hover{background:rgba(201,168,76,0.08)}
+.search-result-item .avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-dark),var(--gold));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#000;flex-shrink:0}
+.search-result-item .info .name{font-weight:500;font-size:14px}
+.search-result-item .info .meta{font-size:12px;color:var(--text-dim)}
+
+.profile-panel{display:none;max-width:1200px;margin:0 auto}
+.profile-panel.show{display:block}
+.profile-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:32px;margin-bottom:24px;display:flex;gap:24px;align-items:center}
+.profile-card .avatar-lg{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#000;flex-shrink:0;border:2px solid var(--gold)}
+.profile-card .details h3{font-size:24px;font-weight:700;letter-spacing:-0.5px}
+.profile-card .details .meta-row{display:flex;gap:16px;margin-top:6px;flex-wrap:wrap}
+.profile-card .details .meta-item{font-size:13px;color:var(--text-dim);display:flex;align-items:center;gap:4px}
+.confidence-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:100px;font-size:12px;font-weight:600}
+.confidence-high{background:rgba(76,201,76,0.1);color:#4cc94c;border:1px solid rgba(76,201,76,0.2)}
+.confidence-med{background:rgba(201,168,76,0.1);color:var(--gold);border:1px solid var(--border-gold)}
+.confidence-low{background:rgba(201,76,76,0.1);color:#c94c4c;border:1px solid rgba(201,76,76,0.2)}
+
+.tree-container{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;position:relative;height:500px;cursor:grab}
+.tree-container:active{cursor:grabbing}
+.tree-container canvas{width:100%;height:100%}
+.tree-controls{position:absolute;bottom:16px;right:16px;display:flex;flex-direction:column;gap:4px}
+.tree-controls button{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:rgba(0,0,0,0.8);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition);backdrop-filter:blur(10px)}
+.tree-controls button:hover{background:rgba(201,168,76,0.15);border-color:var(--border-gold)}
+.tree-gen-label{position:absolute;top:16px;left:16px;font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;background:rgba(0,0,0,0.6);padding:4px 12px;border-radius:6px;backdrop-filter:blur(10px)}
+
+#relationship{background:#050505}
+.rel-search-container{max-width:700px;margin:0 auto}
+.rel-search-row{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+.rel-search-row input{flex:1;min-width:200px;padding:14px 20px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg-card);color:#fff;font-size:14px;font-family:inherit;outline:none;transition:var(--transition)}
+.rel-search-row input:focus{border-color:var(--gold)}
+.rel-path{display:none;max-width:800px;margin:0 auto}
+.rel-path.show{display:block}
+.rel-path-visual{display:flex;align-items:center;gap:0;justify-content:center;flex-wrap:wrap;padding:40px 0}
+.rel-node{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;min-width:120px;transition:var(--transition);cursor:pointer}
+.rel-node:hover{border-color:var(--border-gold);background:var(--bg-card-hover)}
+.rel-node.start,.rel-node.end{border-color:var(--gold);background:rgba(201,168,76,0.05)}
+.rel-node .node-name{font-weight:600;font-size:14px}
+.rel-node .node-meta{font-size:11px;color:var(--text-dim);margin-top:4px}
+.rel-arrow{color:var(--gold);font-size:20px;margin:0 8px;flex-shrink:0}
+.rel-summary{text-align:center;padding:24px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-top:24px}
+.rel-summary .degree{font-size:28px;font-weight:700;color:var(--gold)}
+.rel-summary .desc{color:var(--text-dim);font-size:14px;margin-top:8px}
+
+.evidence-modal{display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center}
+.evidence-modal.show{display:flex}
+.evidence-content{background:#111;border:1px solid var(--border);border-radius:var(--radius-lg);padding:32px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto}
+.evidence-content h3{font-size:20px;font-weight:600;margin-bottom:4px}
+.conf-bar{height:6px;border-radius:3px;background:rgba(255,255,255,0.1);margin:12px 0 20px;overflow:hidden}
+.conf-bar .fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold),var(--gold-light));transition:width 1s ease}
+.evidence-source{padding:12px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.evidence-source .source-name{font-size:13px;font-weight:500}
+.evidence-source .source-type{font-size:11px;color:var(--text-dim)}
+.evidence-source .source-score{font-size:13px;font-weight:600;color:var(--gold)}
+
+#timeline{background:#000}
+.timeline-container{max-width:800px;margin:0 auto;position:relative}
+.timeline-line{position:absolute;left:50%;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--gold),rgba(201,168,76,0.1));transform:translateX(-50%)}
+.timeline-item{display:flex;align-items:center;margin-bottom:48px;opacity:0;transform:translateY(20px);transition:all 0.6s ease}
+.timeline-item.visible{opacity:1;transform:translateY(0)}
+.timeline-item:nth-child(even){flex-direction:row-reverse}
+.timeline-item .tl-content{flex:1;padding:0 40px}
+.timeline-item .tl-dot{width:16px;height:16px;border-radius:50%;background:var(--gold);border:3px solid #000;box-shadow:0 0 0 2px var(--gold);flex-shrink:0;z-index:1}
+.timeline-item .tl-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.timeline-item .tl-year{font-size:13px;font-weight:600;color:var(--gold);margin-bottom:4px}
+.timeline-item .tl-name{font-weight:600;font-size:16px}
+.timeline-item .tl-detail{font-size:13px;color:var(--text-dim);margin-top:4px}
+.timeline-item .tl-spacer{flex:1}
+
+#dna{background:#050505}
+.dna-container{max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.dna-chart-container{display:flex;align-items:center;justify-content:center}
+.dna-chart{position:relative;width:280px;height:280px}
+.dna-chart canvas{width:100%;height:100%}
+.dna-chart-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.dna-chart-center .pct{font-size:32px;font-weight:700}
+.dna-chart-center .lbl{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px}
+.dna-details{display:flex;flex-direction:column;gap:12px;justify-content:center}
+.dna-row{display:flex;align-items:center;gap:12px}
+.dna-color{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.dna-label{font-size:14px;min-width:140px}
+.dna-pct{font-weight:600;font-size:14px;color:var(--gold);min-width:40px;text-align:right}
+.haplo-section{margin-top:32px;grid-column:1/3}
+.haplo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.haplo-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.haplo-card .haplo-type{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.haplo-card .haplo-name{font-size:20px;font-weight:700}
+.haplo-card .haplo-desc{font-size:12px;color:var(--text-dim);margin-top:4px;line-height:1.5}
+
+#migration{background:#000}
+.migration-container{max-width:1000px;margin:0 auto}
+.map-container{position:relative;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;height:500px}
+.map-container canvas{width:100%;height:100%}
+.migration-slider{max-width:500px;margin:24px auto 0;display:flex;align-items:center;gap:16px}
+.migration-slider input[type=range]{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;background:rgba(255,255,255,0.1);outline:none}
+.migration-slider input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--gold);cursor:pointer;border:2px solid #000;box-shadow:0 0 0 2px var(--gold)}
+.migration-slider .year-label{font-size:14px;font-weight:600;color:var(--gold);min-width:80px;text-align:center}
+
+#prediction{background:#050505}
+.prediction-container{max-width:900px;margin:0 auto}
+.prediction-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.pred-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:var(--transition)}
+.pred-card:hover{border-color:var(--border-gold);background:var(--bg-card-hover)}
+.pred-card .pred-status{font-size:18px;margin-bottom:8px}
+.pred-card .pred-name{font-weight:600;font-size:16px}
+.pred-card .pred-dates{font-size:12px;color:var(--text-dim);margin-top:4px}
+.pred-card .pred-location{font-size:12px;color:var(--text-dim)}
+.pred-card .pred-confidence{display:flex;align-items:center;gap:6px;margin-top:12px;font-size:12px}
+.pred-card .pred-conf-bar{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.08);overflow:hidden}
+.pred-card .pred-conf-fill{height:100%;border-radius:2px}
+.pred-card .pred-conf-value{font-weight:600;min-width:35px;text-align:right}
+.pred-legend{display:flex;gap:24px;justify-content:center;margin-bottom:32px;flex-wrap:wrap}
+.pred-legend-item{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-dim)}
+
+#architecture{background:#000}
+.arch-container{max-width:1000px;margin:0 auto}
+.arch-flow{display:flex;flex-direction:column;gap:24px;align-items:center}
+.arch-layer{width:100%;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:32px;text-align:center}
+.arch-layer h3{font-size:18px;font-weight:600;margin-bottom:16px}
+.arch-items{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.arch-item{padding:8px 16px;border-radius:100px;font-size:12px;font-weight:500;background:rgba(201,168,76,0.08);border:1px solid var(--border-gold);color:var(--gold-light)}
+.arch-arrow{font-size:28px;color:var(--gold);opacity:0.5}
+.arch-layer.core{border-color:var(--gold);background:rgba(201,168,76,0.03)}
+.arch-layer.core h3{color:var(--gold)}
+.roadmap{max-width:700px;margin:60px auto 0}
+.roadmap-item{display:flex;gap:20px;margin-bottom:24px;align-items:flex-start}
+.roadmap-phase{padding:4px 12px;border-radius:100px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;flex-shrink:0;min-width:80px;text-align:center}
+.phase-now{background:rgba(76,201,76,0.1);color:#4cc94c;border:1px solid rgba(76,201,76,0.2)}
+.phase-q1{background:rgba(76,150,201,0.1);color:#4c96c9;border:1px solid rgba(76,150,201,0.2)}
+.phase-q2{background:rgba(201,168,76,0.1);color:var(--gold);border:1px solid var(--border-gold)}
+.phase-q3{background:rgba(201,76,76,0.1);color:#c94c4c;border:1px solid rgba(201,76,76,0.2)}
+.roadmap-text h4{font-size:15px;font-weight:600}
+.roadmap-text p{font-size:13px;color:var(--text-dim);margin-top:4px}
+
+footer{padding:60px 40px;text-align:center;border-top:1px solid var(--border)}
+footer .footer-logo{font-size:20px;font-weight:800;margin-bottom:8px;letter-spacing:-0.5px}
+footer p{font-size:12px;color:var(--text-dim)}
+
+@media(max-width:768px){
+  nav{padding:0 20px}
+  .nav-links{display:none}
+  section{padding:80px 20px}
+  .stats-bar{gap:20px}
+  .dna-container{grid-template-columns:1fr}
+  .haplo-section{grid-column:1}
+  .timeline-item,.timeline-item:nth-child(even){flex-direction:column!important}
+  .timeline-item .tl-spacer{display:none}
+  .timeline-item .tl-content{padding:12px 0}
+  .timeline-line{left:20px}
+  .rel-path-visual{flex-direction:column}
+  .rel-arrow{transform:rotate(90deg)}
+  .profile-card{flex-direction:column;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<nav id="navbar">
+  <div class="nav-logo"><div class="logo-icon">L</div> LineageOS</div>
+  <div class="nav-links">
+    <a href="#hero" class="active">Home</a>
+    <a href="#explorer">Explorer</a>
+    <a href="#relationship">Connections</a>
+    <a href="#timeline">Timeline</a>
+    <a href="#dna">DNA</a>
+    <a href="#migration">Migration</a>
+    <a href="#prediction">AI Predictions</a>
+    <a href="#architecture">Vision</a>
+  </div>
+</nav>
+
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-badge"><span class="dot"></span> Now in Public Beta</div>
+    <h1 class="hero-title">Every Human.<br>One Family Tree.</h1>
+    <p class="hero-sub">The first attempt to map the complete lineage of humanity — connecting 120 billion lives across 300,000 years.</p>
+    <div class="hero-buttons">
+      <a href="#explorer" class="btn btn-primary">Explore the Tree &#8594;</a>
+      <a href="#dna" class="btn btn-secondary">Trace My Lineage</a>
+    </div>
+    <div class="stats-bar">
+      <div class="stat"><div class="stat-number" data-target="120" data-suffix="B+">0</div><div class="stat-label">Estimated Humans</div></div>
+      <div class="stat"><div class="stat-number" data-target="8.2" data-suffix="B">0</div><div class="stat-label">Living Today</div></div>
+      <div class="stat"><div class="stat-number" data-target="50" data-suffix="M">0</div><div class="stat-label">Trees Indexed</div></div>
+      <div class="stat"><div class="stat-number" data-target="12" data-suffix="B">0</div><div class="stat-label">Historical Records</div></div>
+      <div class="stat"><div class="stat-number" data-target="2.1" data-suffix="B">0</div><div class="stat-label">DNA Matches</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="explorer">
+  <div class="section-header">
+    <div class="section-label">Lineage Explorer</div>
+    <h2 class="section-title">Navigate the Human Graph</h2>
+    <p class="section-desc">Search any person in the database. Explore their ancestry, descendants, and connections across centuries.</p>
+  </div>
+  <div class="explorer-container">
+    <div class="search-box">
+      <span class="search-icon">&#x2315;</span>
+      <input type="text" id="explorerSearch" placeholder='Search by name... try "Elliot Goldman"' autocomplete="off">
+      <div class="search-results" id="searchResults"></div>
+    </div>
+    <div class="profile-panel" id="profilePanel">
+      <div class="profile-card" id="profileCard"></div>
+      <div class="tree-container" id="treeContainer">
+        <canvas id="treeCanvas"></canvas>
+        <div class="tree-gen-label" id="treeGenLabel">Ancestry View</div>
+        <div class="tree-controls">
+          <button onclick="treeZoom(1.2)" title="Zoom in">+</button>
+          <button onclick="treeZoom(0.8)" title="Zoom out">&minus;</button>
+          <button onclick="treeReset()" title="Reset">&#x27F2;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="relationship">
+  <div class="section-header">
+    <div class="section-label">Relationship Engine</div>
+    <h2 class="section-title">How Are You Connected?</h2>
+    <p class="section-desc">Discover the path between any two people in the global human graph.</p>
+  </div>
+  <div class="rel-search-container">
+    <div class="rel-search-row">
+      <input type="text" id="relPersonA" placeholder="Person A" value="Elliot Goldman">
+      <input type="text" id="relPersonB" placeholder="Person B" value="Abraham Lincoln">
+      <button class="btn btn-primary" onclick="findRelationship()">Find Path</button>
+    </div>
+  </div>
+  <div class="rel-path" id="relPath"></div>
+</section>
+
+<div class="evidence-modal" id="evidenceModal" onclick="if(event.target===this)closeEvidence()">
+  <div class="evidence-content" id="evidenceContent"></div>
+</div>
+
+<section id="timeline">
+  <div class="section-header">
+    <div class="section-label">Timeline View</div>
+    <h2 class="section-title">Journey Through Time</h2>
+    <p class="section-desc">Trace your ancestral line from the present day back through the centuries.</p>
+  </div>
+  <div class="timeline-container" id="timelineContainer">
+    <div class="timeline-line"></div>
+  </div>
+</section>
+
+<section id="dna">
+  <div class="section-header">
+    <div class="section-label">DNA Analysis</div>
+    <h2 class="section-title">Genetic Ancestry</h2>
+    <p class="section-desc">Explore your genetic heritage through DNA analysis and haplogroup mapping.</p>
+  </div>
+  <div class="dna-container">
+    <div class="dna-chart-container">
+      <div class="dna-chart">
+        <canvas id="dnaCanvas" width="280" height="280"></canvas>
+        <div class="dna-chart-center">
+          <div class="pct">100%</div>
+          <div class="lbl">Analyzed</div>
+        </div>
+      </div>
+    </div>
+    <div class="dna-details" id="dnaDetails"></div>
+    <div class="haplo-section">
+      <div class="haplo-grid" id="haploGrid"></div>
+    </div>
+  </div>
+</section>
+
+<section id="migration">
+  <div class="section-header">
+    <div class="section-label">Global Migration</div>
+    <h2 class="section-title">Follow the Journey</h2>
+    <p class="section-desc">Trace your ancestors' migration paths across continents and centuries.</p>
+  </div>
+  <div class="migration-container">
+    <div class="map-container">
+      <canvas id="migrationCanvas"></canvas>
+    </div>
+    <div class="migration-slider">
+      <span class="year-label">500 CE</span>
+      <input type="range" id="migSlider" min="500" max="2026" value="2026" step="10">
+      <span class="year-label" id="migYearCurrent">2026</span>
+    </div>
+  </div>
+</section>
+
+<section id="prediction">
+  <div class="section-header">
+    <div class="section-label">AI Predictions</div>
+    <h2 class="section-title">Predict Missing Ancestors</h2>
+    <p class="section-desc">Our AI fills gaps in the historical record with probabilistic ancestor predictions.</p>
+  </div>
+  <div class="prediction-container">
+    <div class="pred-legend">
+      <div class="pred-legend-item"><span style="color:#4cc94c;font-size:16px">&#10003;</span> Confirmed</div>
+      <div class="pred-legend-item"><span style="color:var(--gold);font-size:16px">&#9680;</span> Likely</div>
+      <div class="pred-legend-item"><span style="color:var(--text-dim);font-size:16px">&#9675;</span> Hypothetical</div>
+    </div>
+    <div class="prediction-grid" id="predictionGrid"></div>
+  </div>
+</section>
+
+<section id="architecture">
+  <div class="section-header">
+    <div class="section-label">Architecture &amp; Vision</div>
+    <h2 class="section-title">How It All Connects</h2>
+    <p class="section-desc">A unified data architecture ingesting billions of records into one coherent human graph.</p>
+  </div>
+  <div class="arch-container">
+    <div class="arch-flow">
+      <div class="arch-layer">
+        <h3>Data Sources</h3>
+        <div class="arch-items">
+          <span class="arch-item">FamilySearch</span>
+          <span class="arch-item">GEDCOM Files</span>
+          <span class="arch-item">Ancestry.com</span>
+          <span class="arch-item">MyHeritage</span>
+          <span class="arch-item">JewishGen</span>
+          <span class="arch-item">Census Records</span>
+          <span class="arch-item">23andMe</span>
+          <span class="arch-item">AncestryDNA</span>
+          <span class="arch-item">Cemetery Records</span>
+          <span class="arch-item">Historical Archives</span>
+          <span class="arch-item">Church Records</span>
+          <span class="arch-item">Ship Manifests</span>
+        </div>
+      </div>
+      <div class="arch-arrow">&#8595;</div>
+      <div class="arch-layer">
+        <h3>Ingestion &amp; Reconciliation</h3>
+        <div class="arch-items">
+          <span class="arch-item">Entity Resolution</span>
+          <span class="arch-item">Record Linkage</span>
+          <span class="arch-item">Deduplication</span>
+          <span class="arch-item">Conflict Resolution</span>
+          <span class="arch-item">Confidence Scoring</span>
+        </div>
+      </div>
+      <div class="arch-arrow">&#8595;</div>
+      <div class="arch-layer core">
+        <h3>Global Human Graph</h3>
+        <div class="arch-items">
+          <span class="arch-item">120B+ Person Nodes</span>
+          <span class="arch-item">400B+ Relationship Edges</span>
+          <span class="arch-item">Neo4j + Custom Engine</span>
+          <span class="arch-item">Probabilistic Edges</span>
+        </div>
+      </div>
+      <div class="arch-arrow">&#8595;</div>
+      <div class="arch-layer">
+        <h3>LineageOS Intelligence Layer</h3>
+        <div class="arch-items">
+          <span class="arch-item">Ancestor Prediction</span>
+          <span class="arch-item">Migration Modeling</span>
+          <span class="arch-item">DNA Integration</span>
+          <span class="arch-item">Relationship Pathfinding</span>
+          <span class="arch-item">Evidence Fusion</span>
+        </div>
+      </div>
+      <div class="arch-arrow">&#8595;</div>
+      <div class="arch-layer">
+        <h3>Unified Human Family Tree</h3>
+        <div class="arch-items">
+          <span class="arch-item">Explorer API</span>
+          <span class="arch-item">Web App</span>
+          <span class="arch-item">Mobile SDK</span>
+          <span class="arch-item">Research Portal</span>
+          <span class="arch-item">Partner Integrations</span>
+        </div>
+      </div>
+    </div>
+    <div class="roadmap">
+      <div style="text-align:center;margin-bottom:32px"><div class="section-label">Roadmap</div></div>
+      <div class="roadmap-item">
+        <span class="roadmap-phase phase-now">Now</span>
+        <div class="roadmap-text"><h4>Public Beta Launch</h4><p>50M family trees indexed, ancestry explorer, DNA integration, relationship pathfinding.</p></div>
+      </div>
+      <div class="roadmap-item">
+        <span class="roadmap-phase phase-q1">Q1 '27</span>
+        <div class="roadmap-text"><h4>AI Ancestor Prediction v2</h4><p>Transformer-based models trained on 12B records. Fill gaps with 94%+ accuracy.</p></div>
+      </div>
+      <div class="roadmap-item">
+        <span class="roadmap-phase phase-q2">Q2 '27</span>
+        <div class="roadmap-text"><h4>Global DNA Network</h4><p>Integrate with all major DNA providers. 2.1B genetic matches cross-referenced.</p></div>
+      </div>
+      <div class="roadmap-item">
+        <span class="roadmap-phase phase-q3">2028</span>
+        <div class="roadmap-text"><h4>Complete Human Graph</h4><p>Every documented human connected. The largest knowledge graph ever constructed.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">LineageOS</div>
+  <p>Every human. One family tree. &copy; 2026 LineageOS, Inc.</p>
+</footer>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+var PEOPLE=[], PERSON_MAP={}, nextId=1;
+function addPerson(p){p.id=nextId++;PEOPLE.push(p);PERSON_MAP[p.id]=p;return p}
+
+var elliot=addPerson({name:"Elliot Goldman",birth:1997,death:null,location:"New York, NY",confidence:99,fatherId:null,motherId:null,gen:0});
+var davidG=addPerson({name:"David Goldman",birth:1965,death:null,location:"Brooklyn, NY",confidence:98,fatherId:null,motherId:null,gen:1});
+var sarahK=addPerson({name:"Sarah Katz",birth:1968,death:null,location:"Manhattan, NY",confidence:98,fatherId:null,motherId:null,gen:1});
+elliot.fatherId=davidG.id;elliot.motherId=sarahK.id;
+
+var samG=addPerson({name:"Samuel Goldman",birth:1935,death:2010,location:"Brooklyn, NY",confidence:96,fatherId:null,motherId:null,gen:2});
+var ruthL=addPerson({name:"Ruth Levine",birth:1938,death:2018,location:"Queens, NY",confidence:96,fatherId:null,motherId:null,gen:2});
+davidG.fatherId=samG.id;davidG.motherId=ruthL.id;
+
+var morrisK=addPerson({name:"Morris Katz",birth:1940,death:2015,location:"Philadelphia, PA",confidence:95,fatherId:null,motherId:null,gen:2});
+var estherW=addPerson({name:"Esther Weinberg",birth:1942,death:null,location:"Philadelphia, PA",confidence:95,fatherId:null,motherId:null,gen:2});
+sarahK.fatherId=morrisK.id;sarahK.motherId=estherW.id;
+
+var abrahamG=addPerson({name:"Abraham Goldman",birth:1905,death:1978,location:"Lodz, Poland \u2192 Brooklyn, NY",confidence:91,fatherId:null,motherId:null,gen:3});
+var mirG=addPerson({name:"Miriam Rosen",birth:1908,death:1985,location:"Warsaw, Poland \u2192 Brooklyn, NY",confidence:90,fatherId:null,motherId:null,gen:3});
+samG.fatherId=abrahamG.id;samG.motherId=mirG.id;
+
+var isaacL=addPerson({name:"Isaac Levine",birth:1910,death:1990,location:"Vilnius, Lithuania \u2192 Queens, NY",confidence:88,fatherId:null,motherId:null,gen:3});
+var hannahS=addPerson({name:"Hannah Stern",birth:1912,death:1992,location:"Minsk, Belarus \u2192 Queens, NY",confidence:87,fatherId:null,motherId:null,gen:3});
+ruthL.fatherId=isaacL.id;ruthL.motherId=hannahS.id;
+
+var jacobK=addPerson({name:"Jacob Katz",birth:1912,death:1980,location:"Krakow, Poland \u2192 Philadelphia, PA",confidence:89,fatherId:null,motherId:null,gen:3});
+var leahF=addPerson({name:"Leah Friedman",birth:1915,death:1988,location:"Budapest, Hungary \u2192 Philadelphia, PA",confidence:87,fatherId:null,motherId:null,gen:3});
+morrisK.fatherId=jacobK.id;morrisK.motherId=leahF.id;
+
+var nW=addPerson({name:"Nathan Weinberg",birth:1914,death:1985,location:"Vienna, Austria \u2192 Philadelphia, PA",confidence:86,fatherId:null,motherId:null,gen:3});
+var rW=addPerson({name:"Rosa Blum",birth:1918,death:1990,location:"Prague \u2192 Philadelphia, PA",confidence:85,fatherId:null,motherId:null,gen:3});
+estherW.fatherId=nW.id;estherW.motherId=rW.id;
+
+var mosheG=addPerson({name:"Moshe Goldman",birth:1875,death:1945,location:"Lodz, Poland",confidence:82,fatherId:null,motherId:null,gen:4});
+var ch1=addPerson({name:"Chaya Birnbaum",birth:1878,death:1942,location:"Lodz, Poland",confidence:80,fatherId:null,motherId:null,gen:4});
+abrahamG.fatherId=mosheG.id;abrahamG.motherId=ch1.id;
+
+var yrG=addPerson({name:"Yosef Rosen",birth:1880,death:1943,location:"Warsaw, Poland",confidence:78,fatherId:null,motherId:null,gen:4});
+var frG=addPerson({name:"Freida Shapiro",birth:1882,death:1944,location:"Warsaw, Poland",confidence:76,fatherId:null,motherId:null,gen:4});
+mirG.fatherId=yrG.id;mirG.motherId=frG.id;
+
+var elL=addPerson({name:"Eliezer Levine",birth:1878,death:1940,location:"Vilnius, Lithuania",confidence:75,fatherId:null,motherId:null,gen:4});
+var dvL=addPerson({name:"Dvora Margolis",birth:1882,death:1941,location:"Vilnius, Lithuania",confidence:73,fatherId:null,motherId:null,gen:4});
+isaacL.fatherId=elL.id;isaacL.motherId=dvL.id;
+
+var tzG=addPerson({name:"Tzvi Goldman",birth:1845,death:1920,location:"Lodz, Poland",confidence:68,fatherId:null,motherId:null,gen:5});
+var rchG=addPerson({name:"Rivka Goldschmidt",birth:1848,death:1925,location:"Lodz, Poland",confidence:65,fatherId:null,motherId:null,gen:5});
+mosheG.fatherId=tzG.id;mosheG.motherId=rchG.id;
+
+addPerson({name:"Rebecca Goldman",birth:2000,death:null,location:"New York, NY",confidence:99,fatherId:davidG.id,motherId:sarahK.id,gen:0});
+var joshG=addPerson({name:"Joshua Goldman",birth:1962,death:null,location:"Boston, MA",confidence:97,fatherId:samG.id,motherId:ruthL.id,gen:1});
+addPerson({name:"Amy Goldman",birth:1990,death:null,location:"Boston, MA",confidence:98,fatherId:joshG.id,motherId:null,gen:0});
+
+var lincoln=addPerson({name:"Abraham Lincoln",birth:1809,death:1865,location:"Springfield, IL",confidence:99,fatherId:null,motherId:null,gen:5});
+
+var extraNames=[
+["Emma","Cohen",1985,null,"Los Angeles, CA",97],["Noah","Bernstein",1978,null,"Chicago, IL",96],
+["Olivia","Shapiro",1992,null,"San Francisco, CA",95],["Liam","Abramovich",1955,2020,"Miami, FL",90],
+["Sophia","Rosenthal",1948,2019,"Tel Aviv, Israel",88],["James","Kaufman",1960,null,"London, UK",93],
+["Isabella","Greenbaum",1975,null,"Toronto, Canada",94],["Benjamin","Schwartz",1940,2005,"Buenos Aires",85],
+["Mia","Horowitz",1988,null,"Melbourne, Australia",96],["Alexander","Perlman",1932,2001,"Odessa, Ukraine",78],
+["Charlotte","Feinstein",1970,null,"Washington, DC",95],["Daniel","Rosenberg",1982,null,"Seattle, WA",97],
+["Amelia","Goldberg",1958,null,"Denver, CO",92],["Matthew","Silverman",1945,2018,"Montreal, Canada",87],
+["Harper","Eisenberg",1995,null,"Austin, TX",98],["Ethan","Feldman",1968,null,"Portland, OR",94],
+["Evelyn","Mandelbaum",1925,1998,"Berlin \u2192 New York, NY",76],
+["Henry","Rubenstein",1890,1960,"Odessa \u2192 Chicago, IL",72],
+["Aria","Weissman",2001,null,"San Diego, CA",99],["Jack","Lieberman",1915,1988,"Hamburg \u2192 Boston, MA",79],
+["Nora","Blumenthal",1950,null,"Paris, France",91],["Leo","Tannenbaum",1938,2010,"Amsterdam \u2192 New York",83],
+["Grace","Oppenheimer",1972,null,"Zurich, Switzerland",93],["Owen","Strauss",1985,null,"Vienna, Austria",95],
+["Chloe","Baumann",1960,null,"Munich, Germany",90],["Lucas","Jacobson",1942,2015,"Stockholm, Sweden",86],
+["Penelope","Adelstein",1998,null,"Brooklyn, NY",98],["Mason","Kirschner",1930,2005,"Prague",80],
+["Layla","Gutenberg",1988,null,"Frankfurt, Germany",94],["Logan","Davidovich",1975,null,"Moscow, Russia",89]
+];
+extraNames.forEach(function(n){addPerson({name:n[0]+" "+n[1],birth:n[2],death:n[3],location:n[4],confidence:n[5],fatherId:null,motherId:null,gen:Math.floor(Math.random()*4)})});
+
+// ============================================================
+// HERO CANVAS
+// ============================================================
+(function(){
+var c=document.getElementById('hero-canvas'),ctx=c.getContext('2d'),W,H,nodes=[],mouse={x:-1e3,y:-1e3};
+function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}
+resize();window.addEventListener('resize',resize);
+function Node(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-0.5)*0.4;this.vy=(Math.random()-0.5)*0.4;this.r=Math.random()*2+1;this.o=Math.random()*0.5+0.1}
+for(var i=0;i<120;i++)nodes.push(new Node());
+document.addEventListener('mousemove',function(e){mouse.x=e.clientX;mouse.y=e.clientY});
+function draw(){
+ctx.clearRect(0,0,W,H);
+for(var i=0;i<nodes.length;i++)for(var j=i+1;j<nodes.length;j++){
+var dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.sqrt(dx*dx+dy*dy);
+if(d<180){ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.strokeStyle='rgba(201,168,76,'+(1-d/180)*0.12+')';ctx.lineWidth=0.5;ctx.stroke()}}
+nodes.forEach(function(n){
+n.x+=n.vx;n.y+=n.vy;
+if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;
+var dx=n.x-mouse.x,dy=n.y-mouse.y,dm=Math.sqrt(dx*dx+dy*dy),glow=dm<200?(1-dm/200)*0.4:0;
+ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fillStyle='rgba(201,168,76,'+(n.o+glow)+')';ctx.fill()});
+requestAnimationFrame(draw)}
+draw()})();
+
+// ============================================================
+// STATS
+// ============================================================
+var statsAnimated=false;
+function animateStats(){
+if(statsAnimated)return;statsAnimated=true;
+document.querySelectorAll('.stat-number').forEach(function(el){
+var target=parseFloat(el.dataset.target),suffix=el.dataset.suffix||'',start=performance.now();
+function tick(now){
+var p=Math.min((now-start)/2000,1),eased=1-Math.pow(1-p,3);
+var v=target*eased;
+el.textContent=(target%1!==0?v.toFixed(1):Math.floor(v))+suffix;
+if(p<1)requestAnimationFrame(tick)}
+requestAnimationFrame(tick)})}
+
+// ============================================================
+// NAV
+// ============================================================
+var sections=document.querySelectorAll('section'),navLinks=document.querySelectorAll('.nav-links a'),navbar=document.getElementById('navbar');
+var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){
+if(e.isIntersecting){navLinks.forEach(function(l){l.classList.remove('active')});
+var link=document.querySelector('.nav-links a[href="#'+e.target.id+'"]');if(link)link.classList.add('active');
+if(e.target.id==='hero')animateStats()}})},{threshold:0.3});
+sections.forEach(function(s){obs.observe(s)});
+window.addEventListener('scroll',function(){navbar.classList.toggle('scrolled',window.scrollY>50)});
+
+// ============================================================
+// EXPLORER SEARCH
+// ============================================================
+var explorerSearch=document.getElementById('explorerSearch'),searchResults=document.getElementById('searchResults');
+explorerSearch.addEventListener('input',function(){
+var q=explorerSearch.value.toLowerCase().trim();
+if(q.length<2){searchResults.classList.remove('show');return}
+var matches=PEOPLE.filter(function(p){return p.name.toLowerCase().indexOf(q)>-1}).slice(0,8);
+if(!matches.length){searchResults.classList.remove('show');return}
+searchResults.innerHTML=matches.map(function(p){
+var initials=p.name.split(' ').map(function(w){return w[0]}).join('');
+return '<div class="search-result-item" onclick="selectPerson('+p.id+')"><div class="avatar">'+initials+'</div><div class="info"><div class="name">'+p.name+'</div><div class="meta">'+p.birth+(p.death?' \u2013 '+p.death:'')+' \u00B7 '+p.location+'</div></div></div>'}).join('');
+searchResults.classList.add('show')});
+document.addEventListener('click',function(e){if(!e.target.closest('.search-box'))searchResults.classList.remove('show')});
+
+// ============================================================
+// TREE
+// ============================================================
+var selectedPerson=null,treeScale=1,treeOffsetX=0,treeOffsetY=0,isDragging=false,dragStart={x:0,y:0};
+
+function selectPerson(id){
+selectedPerson=PERSON_MAP[id];searchResults.classList.remove('show');explorerSearch.value=selectedPerson.name;
+var p=selectedPerson,cc=p.confidence>=90?'confidence-high':p.confidence>=70?'confidence-med':'confidence-low';
+var initials=p.name.split(' ').map(function(w){return w[0]}).join('');
+document.getElementById('profileCard').innerHTML='<div class="avatar-lg">'+initials+'</div><div class="details"><h3>'+p.name+'</h3><div class="meta-row"><span class="meta-item">\u{1F4C5} '+p.birth+(p.death?' \u2013 '+p.death:' \u2013 Present')+'</span><span class="meta-item">\u{1F4CD} '+p.location+'</span><span class="confidence-badge '+cc+'">'+p.confidence+'% confidence</span></div></div>';
+document.getElementById('profilePanel').classList.add('show');
+treeScale=1;treeOffsetX=0;treeOffsetY=0;drawTree()}
+
+function getAncTree(person,depth,max){
+if(!person||depth>max)return null;
+return{person:person,depth:depth,
+father:person.fatherId?getAncTree(PERSON_MAP[person.fatherId],depth+1,max):null,
+mother:person.motherId?getAncTree(PERSON_MAP[person.motherId],depth+1,max):null}}
+
+function drawTree(){
+var canvas=document.getElementById('treeCanvas'),container=document.getElementById('treeContainer');
+var dpr=window.devicePixelRatio||1;
+canvas.width=container.clientWidth*dpr;canvas.height=container.clientHeight*dpr;
+canvas.style.width=container.clientWidth+'px';canvas.style.height=container.clientHeight+'px';
+var ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+var W=container.clientWidth,H=container.clientHeight;
+ctx.clearRect(0,0,W,H);ctx.save();
+ctx.translate(W/2+treeOffsetX,80+treeOffsetY);ctx.scale(treeScale,treeScale);
+var tree=getAncTree(selectedPerson,0,5);if(!tree){ctx.restore();return}
+var nW=140,nH=50,vG=70,hG=20;
+
+// Collect generations
+var gens={};
+function collect(node,d){if(!node)return;if(!gens[d])gens[d]=[];gens[d].push(node);collect(node.father,d+1);collect(node.mother,d+1)}
+collect(tree,0);
+var maxGen=Math.max.apply(null,Object.keys(gens).map(Number));
+
+// Position nodes
+var pos={};
+for(var g=maxGen;g>=0;g--){
+var gen=gens[g]||[];
+if(g===maxGen){gen.forEach(function(n,i){pos[n.person.id]={x:(i-(gen.length-1)/2)*(nW+hG),y:g*(nH+vG)}})}
+else{gen.forEach(function(n){
+var ch=[];
+if(n.father&&pos[n.father.person.id])ch.push(pos[n.father.person.id]);
+if(n.mother&&pos[n.mother.person.id])ch.push(pos[n.mother.person.id]);
+if(ch.length){pos[n.person.id]={x:ch.reduce(function(s,c){return s+c.x},0)/ch.length,y:g*(nH+vG)}}
+else{pos[n.person.id]={x:0,y:g*(nH+vG)}}})}}
+
+// Draw edges
+function drawEdges(node){if(!node)return;var p=pos[node.person.id];if(!p)return;
+[node.father,node.mother].forEach(function(child){if(!child)return;var cp=pos[child.person.id];if(!cp)return;
+ctx.beginPath();ctx.moveTo(p.x,p.y+nH);
+ctx.bezierCurveTo(p.x,p.y+nH+vG/2,cp.x,cp.y-vG/2,cp.x,cp.y);
+ctx.strokeStyle='rgba(201,168,76,0.3)';ctx.lineWidth=1.5;ctx.stroke();drawEdges(child)})}
+drawEdges(tree);
+
+// Draw nodes
+function drawNodes(node){if(!node)return;var p=pos[node.person.id];if(!p)return;
+var person=node.person,isSel=person.id===selectedPerson.id;
+var x=p.x-nW/2,y=p.y;
+ctx.beginPath();ctx.roundRect(x,y,nW,nH,8);
+ctx.fillStyle=isSel?'rgba(201,168,76,0.12)':'rgba(255,255,255,0.03)';ctx.fill();
+ctx.strokeStyle=isSel?'rgba(201,168,76,0.6)':'rgba(255,255,255,0.1)';ctx.lineWidth=isSel?2:1;ctx.stroke();
+ctx.fillStyle=isSel?'#C9A84C':'#fff';ctx.font=(isSel?'600':'500')+' 11px Inter,sans-serif';ctx.textAlign='center';
+var nm=person.name.length>18?person.name.substring(0,17)+'\u2026':person.name;
+ctx.fillText(nm,p.x,p.y+20);
+ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='400 9px Inter,sans-serif';
+ctx.fillText(person.birth+(person.death?' \u2013 '+person.death:''),p.x,p.y+36);
+drawNodes(node.father);drawNodes(node.mother)}
+drawNodes(tree);
+ctx.restore();
+document.getElementById('treeGenLabel').textContent=(maxGen+1)+' Generations \u00B7 '+Object.keys(pos).length+' Ancestors'}
+
+function treeZoom(f){treeScale*=f;drawTree()}
+function treeReset(){treeScale=1;treeOffsetX=0;treeOffsetY=0;drawTree()}
+
+var tc=document.getElementById('treeContainer');
+tc.addEventListener('mousedown',function(e){isDragging=true;dragStart={x:e.clientX-treeOffsetX,y:e.clientY-treeOffsetY}});
+window.addEventListener('mousemove',function(e){if(!isDragging)return;treeOffsetX=e.clientX-dragStart.x;treeOffsetY=e.clientY-dragStart.y;drawTree()});
+window.addEventListener('mouseup',function(){isDragging=false});
+tc.addEventListener('wheel',function(e){e.preventDefault();treeZoom(e.deltaY<0?1.1:0.9)},{passive:false});
+
+setTimeout(function(){selectPerson(elliot.id)},500);
+
+// ============================================================
+// RELATIONSHIP ENGINE
+// ============================================================
+function findRelationship(){
+var nameA=document.getElementById('relPersonA').value.trim();
+var nameB=document.getElementById('relPersonB').value.trim();
+var container=document.getElementById('relPath');
+var isLincoln=nameB.toLowerCase().indexOf('lincoln')>-1;
+var pathNames=isLincoln?[
+{name:nameA,dates:'b. 1997',loc:'New York, NY',rel:''},
+{name:'David Goldman',dates:'b. 1965',loc:'Brooklyn, NY',rel:'Father'},
+{name:'Samuel Goldman',dates:'1935\u20132010',loc:'Brooklyn, NY',rel:'Father'},
+{name:'Abraham Goldman',dates:'1905\u20131978',loc:'Lodz \u2192 Brooklyn',rel:'Father'},
+{name:'Moshe Goldman',dates:'1875\u20131945',loc:'Lodz, Poland',rel:'Father'},
+{name:'[Common Ancestor]',dates:'c. 1830',loc:'Central Europe',rel:'AI Predicted'},
+{name:'Johannes Hanks',dates:'1802\u20131870',loc:'Kentucky',rel:'Descendant'},
+{name:'Nancy Hanks',dates:'1784\u20131818',loc:'Virginia',rel:'Mother'},
+{name:'Abraham Lincoln',dates:'1809\u20131865',loc:'Springfield, IL',rel:'Son'}
+]:[
+{name:nameA||'Person A',dates:'',loc:'',rel:''},
+{name:'[Intermediate]',dates:'',loc:'',rel:'Parent'},
+{name:'[Common Ancestor]',dates:'',loc:'',rel:'AI Predicted'},
+{name:nameB||'Person B',dates:'',loc:'',rel:'Descendant'}];
+
+container.innerHTML='<div class="rel-path-visual">'+pathNames.map(function(p,i){
+var arrow=i>0?'<div class="rel-arrow">\u2192</div>':'';
+var cls=i===0?'start':i===pathNames.length-1?'end':'';
+return arrow+'<div class="rel-node '+cls+'" onclick="showEvidence(\''+p.name.replace(/'/g,"\\'")+'\',\''+(pathNames[Math.min(i+1,pathNames.length-1)].name).replace(/'/g,"\\'")+'\',\''+p.rel+'\')"><div class="node-name">'+p.name+'</div><div class="node-meta">'+p.dates+(p.loc?' \u00B7 '+p.loc:'')+'</div></div>'}).join('')+'</div>'+
+'<div class="rel-summary"><div class="degree">'+(isLincoln?'18th Cousin, 5\u00D7 Removed':'Relationship Path')+'</div>'+
+'<div class="desc">'+(isLincoln?'Connected through 9 generations via predicted common ancestor c. 1830 in Central Europe. Click any node to view evidence.':'Enter two names to discover their relationship path.')+'</div></div>';
+container.classList.add('show')}
+
+// ============================================================
+// EVIDENCE MODAL
+// ============================================================
+function showEvidence(personA,personB,relType){
+var sources=[
+{name:'Birth Certificate',type:'Official Document',score:98},
+{name:'1920 US Census',type:'Census Record',score:92},
+{name:'DNA Segment Match',type:'Genetic Evidence',score:88},
+{name:'FamilySearch Tree',type:'Family Tree Agreement',score:85},
+{name:'JewishGen Database',type:'Community Record',score:80},
+{name:'Ship Manifest \u2014 SS Rotterdam',type:'Immigration Record',score:76}];
+document.getElementById('evidenceContent').innerHTML=
+'<h3>'+personA+' \u2192 '+personB+'</h3>'+
+'<p style="color:var(--text-dim);font-size:13px;margin-top:4px">Relationship: '+(relType||'Parent\u2013Child')+'</p>'+
+'<div style="display:flex;align-items:center;gap:12px;margin-top:16px"><span style="font-size:13px;color:var(--text-dim)">Confidence</span><span style="font-size:20px;font-weight:700;color:var(--gold)">92%</span></div>'+
+'<div class="conf-bar"><div class="fill" style="width:92%"></div></div>'+
+'<p style="font-size:12px;color:var(--text-dim);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">Evidence Sources</p>'+
+sources.map(function(s){return '<div class="evidence-source"><div><div class="source-name">'+s.name+'</div><div class="source-type">'+s.type+'</div></div><div class="source-score">'+s.score+'%</div></div>'}).join('')+
+'<button onclick="closeEvidence()" style="margin-top:20px;width:100%" class="btn btn-secondary">Close</button>';
+document.getElementById('evidenceModal').classList.add('show')}
+function closeEvidence(){document.getElementById('evidenceModal').classList.remove('show')}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeEvidence()});
+
+// ============================================================
+// TIMELINE
+// ============================================================
+(function(){
+var container=document.getElementById('timelineContainer');
+var ancestors=[
+{name:'Elliot Goldman',year:1997,loc:'New York, NY',detail:'Born in Manhattan. Current generation.',conf:99},
+{name:'David Goldman',year:1965,loc:'Brooklyn, NY',detail:'Father. Software engineer.',conf:98},
+{name:'Samuel Goldman',year:1935,loc:'Brooklyn, NY',detail:'Grandfather. First generation born in America.',conf:96},
+{name:'Abraham Goldman',year:1905,loc:'Lodz, Poland \u2192 Brooklyn, NY',detail:'Great-grandfather. Immigrated to the US in 1928.',conf:91},
+{name:'Moshe Goldman',year:1875,loc:'Lodz, Poland',detail:'Great-great-grandfather. Textile worker.',conf:82},
+{name:'Tzvi Goldman',year:1845,loc:'Lodz, Poland',detail:'5th generation. Records from synagogue archives.',conf:68},
+{name:'[Predicted] Shlomo Goldman',year:1810,loc:'Central Poland',detail:'AI-predicted ancestor. Confidence based on surname analysis.',conf:45},
+{name:'[Predicted] Unknown Goldman',year:1775,loc:'Poland / Prussia border',detail:'AI-predicted. Surname adoption period.',conf:28},
+{name:'[Hypothetical] Ancestral Line',year:1700,loc:'Eastern Europe',detail:'Hypothetical placement based on migration patterns.',conf:12}];
+ancestors.forEach(function(a,i){
+var item=document.createElement('div');item.className='timeline-item';
+item.style.transitionDelay=(i*0.1)+'s';
+var fade=Math.max(0.3,a.conf/100);
+var cc=a.conf>=90?'confidence-high':a.conf>=50?'confidence-med':'confidence-low';
+item.innerHTML='<div class="tl-content"><div class="tl-card" style="opacity:'+fade+'"><div class="tl-year">'+a.year+'</div><div class="tl-name">'+a.name+'</div><div class="tl-detail">'+a.loc+'<br>'+a.detail+'</div><div style="margin-top:8px"><span class="confidence-badge '+cc+'">'+a.conf+'%</span></div></div></div><div class="tl-dot" style="opacity:'+fade+'"></div><div class="tl-spacer"></div>';
+container.appendChild(item)});
+var tlObs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.1});
+document.querySelectorAll('.timeline-item').forEach(function(el){tlObs.observe(el)})})();
+
+// ============================================================
+// DNA CHART
+// ============================================================
+(function(){
+var data=[
+{label:'Ashkenazi Jewish',pct:45,color:'#C9A84C'},
+{label:'Eastern European',pct:28,color:'#8B7A3C'},
+{label:'Central European',pct:12,color:'#6B5F30'},
+{label:'Mediterranean',pct:8,color:'#4A8B6B'},
+{label:'Middle Eastern',pct:5,color:'#4A6B8B'},
+{label:'Other / Trace',pct:2,color:'#666'}];
+var canvas=document.getElementById('dnaCanvas'),ctx=canvas.getContext('2d');
+var cx=140,cy=140,oR=130,iR=90,sa=-Math.PI/2;
+data.forEach(function(d){
+var sw=(d.pct/100)*Math.PI*2;
+ctx.beginPath();ctx.arc(cx,cy,oR,sa,sa+sw);ctx.arc(cx,cy,iR,sa+sw,sa,true);ctx.closePath();ctx.fillStyle=d.color;ctx.fill();sa+=sw});
+var details=document.getElementById('dnaDetails');
+data.forEach(function(d){
+details.innerHTML+='<div class="dna-row"><div class="dna-color" style="background:'+d.color+'"></div><div class="dna-label">'+d.label+'</div><div class="dna-pct">'+d.pct+'%</div></div>'});
+var grid=document.getElementById('haploGrid');
+[{type:'Paternal Haplogroup',name:'J-M267',desc:'Common in Middle Eastern and Southern European populations. Associated with the Levantine Neolithic expansion.'},
+{type:'Maternal Haplogroup',name:'K1a1b1a',desc:'Prevalent among Ashkenazi Jewish populations. Traced to four founding mothers ~2,000 years ago.'},
+{type:'Neanderthal DNA',name:'2.4%',desc:'Slightly above average. Inherited from interbreeding events ~50,000 years ago in the Middle East.'},
+{type:'Shared Ancestors',name:'~12,400',desc:'Estimated 4th+ cousins identified through DNA segment matching across partner databases.'}
+].forEach(function(h){grid.innerHTML+='<div class="haplo-card"><div class="haplo-type">'+h.type+'</div><div class="haplo-name">'+h.name+'</div><div class="haplo-desc">'+h.desc+'</div></div>'})})();
+
+// ============================================================
+// MIGRATION MAP
+// ============================================================
+(function(){
+var canvas=document.getElementById('migrationCanvas'),container=canvas.parentElement,ctx=canvas.getContext('2d'),W,H;
+function resize(){var dpr=window.devicePixelRatio||1;W=container.clientWidth;H=container.clientHeight;
+canvas.width=W*dpr;canvas.height=H*dpr;canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);drawMap()}
+function proj(lon,lat){return[(lon+180)/360*W,(90-lat)/180*H]}
+var continents=[
+[[-130,55],[-60,55],[-55,45],[-65,30],[-80,10],[-85,15],[-105,20],[-120,35],[-130,55]],
+[[-80,10],[-35,-5],[-35,-55],[-70,-55],[-80,-15],[-80,10]],
+[[-10,36],[30,36],[30,45],[40,50],[35,60],[25,70],[10,70],[-5,60],[-10,36]],
+[[-15,36],[40,36],[50,12],[40,-35],[20,-35],[10,-5],[-15,5],[-15,36]],
+[[40,36],[60,25],[75,15],[90,20],[105,25],[120,35],[130,50],[140,60],[130,70],[90,70],[60,60],[50,50],[40,36]],
+[[115,-12],[150,-12],[150,-38],[115,-38],[115,-12]]];
+var migPath=[
+{lon:35,lat:31,year:500,label:'Levant'},
+{lon:-4,lat:37,year:900,label:'Iberian Peninsula'},
+{lon:10,lat:48,year:1200,label:'Central Europe'},
+{lon:19,lat:51,year:1500,label:'Poland'},
+{lon:19,lat:51.5,year:1850,label:'Lodz, Poland'},
+{lon:-74,lat:40.7,year:1928,label:'New York, USA'}];
+var slider=document.getElementById('migSlider'),yearLabel=document.getElementById('migYearCurrent');
+function drawMap(){
+ctx.clearRect(0,0,W,H);var cur=parseInt(slider.value);yearLabel.textContent=cur+' CE';
+continents.forEach(function(c){ctx.beginPath();c.forEach(function(pt,i){var p=proj(pt[0],pt[1]);i===0?ctx.moveTo(p[0],p[1]):ctx.lineTo(p[0],p[1])});ctx.closePath();ctx.fillStyle='rgba(255,255,255,0.04)';ctx.strokeStyle='rgba(255,255,255,0.08)';ctx.lineWidth=0.5;ctx.fill();ctx.stroke()});
+var vis=migPath.filter(function(p){return p.year<=cur});
+if(vis.length>1){ctx.beginPath();vis.forEach(function(pt,i){var p=proj(pt.lon,pt.lat);i===0?ctx.moveTo(p[0],p[1]):ctx.lineTo(p[0],p[1])});ctx.strokeStyle='rgba(201,168,76,0.6)';ctx.lineWidth=2;ctx.setLineDash([6,4]);ctx.stroke();ctx.setLineDash([])}
+vis.forEach(function(pt,i){var p=proj(pt.lon,pt.lat),last=i===vis.length-1;
+if(last){var g=ctx.createRadialGradient(p[0],p[1],0,p[0],p[1],25);g.addColorStop(0,'rgba(201,168,76,0.3)');g.addColorStop(1,'rgba(201,168,76,0)');ctx.fillStyle=g;ctx.fillRect(p[0]-25,p[1]-25,50,50)}
+ctx.beginPath();ctx.arc(p[0],p[1],last?6:4,0,Math.PI*2);ctx.fillStyle=last?'#C9A84C':'rgba(201,168,76,0.5)';ctx.fill();
+ctx.fillStyle=last?'#fff':'rgba(255,255,255,0.5)';ctx.font=(last?'600':'400')+' '+(last?12:10)+'px Inter,sans-serif';ctx.textAlign='center';ctx.fillText(pt.label+' ('+pt.year+')',p[0],p[1]-14)})}
+slider.addEventListener('input',drawMap);window.addEventListener('resize',resize);resize()})();
+
+// ============================================================
+// AI PREDICTIONS
+// ============================================================
+(function(){
+var grid=document.getElementById('predictionGrid');
+var preds=[
+{st:'\u2713',sc:'#4cc94c',name:'Abraham Goldman',dates:'1905\u20131978',loc:'Lodz \u2192 Brooklyn',conf:91},
+{st:'\u2713',sc:'#4cc94c',name:'Miriam Rosen',dates:'1908\u20131985',loc:'Warsaw \u2192 Brooklyn',conf:90},
+{st:'\u2713',sc:'#4cc94c',name:'Moshe Goldman',dates:'1875\u20131945',loc:'Lodz, Poland',conf:82},
+{st:'\u25D0',sc:'#C9A84C',name:'Shlomo Goldman',dates:'c. 1810\u20131870',loc:'Central Poland',conf:62},
+{st:'\u25D0',sc:'#C9A84C',name:'Rivka Horowitz',dates:'c. 1815\u20131880',loc:'Lodz region',conf:55},
+{st:'\u25D0',sc:'#C9A84C',name:'Yakov Goldschmidt',dates:'c. 1820\u20131895',loc:'Silesia / Lodz',conf:48},
+{st:'\u25CB',sc:'rgba(255,255,255,0.4)',name:'Unknown Goldman',dates:'c. 1775\u20131840',loc:'Poland / Prussia',conf:28},
+{st:'\u25CB',sc:'rgba(255,255,255,0.4)',name:'Unknown (Maternal)',dates:'c. 1780\u20131845',loc:'Eastern Europe',conf:22},
+{st:'\u25CB',sc:'rgba(255,255,255,0.4)',name:'Ancestral Line',dates:'c. 1700\u2013?',loc:'Eastern Europe',conf:12}];
+preds.forEach(function(p){
+var fc=p.conf>=80?'#4cc94c':p.conf>=40?'#C9A84C':'#666';
+grid.innerHTML+='<div class="pred-card"><div class="pred-status" style="color:'+p.sc+'">'+p.st+'</div><div class="pred-name">'+p.name+'</div><div class="pred-dates">'+p.dates+'</div><div class="pred-location">\u{1F4CD} '+p.loc+'</div><div class="pred-confidence"><div class="pred-conf-bar"><div class="pred-conf-fill" style="width:'+p.conf+'%;background:'+fc+'"></div></div><div class="pred-conf-value" style="color:'+fc+'">'+p.conf+'%</div></div></div>'})})();
+
+// ============================================================
+// MISC
+// ============================================================
+window.addEventListener('resize',function(){if(selectedPerson)drawTree()});
+document.querySelectorAll('a[href^="#"]').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();var t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth'})})});
+</script>
+</body>
+</html>
